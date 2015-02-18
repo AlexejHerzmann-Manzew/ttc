@@ -16,12 +16,12 @@ package org.sparkle.jcfg;
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 /**
  *
  * @author yew_mentzaki
  */
 public class Parameter {
+
     private String name;
     private Object value;
 
@@ -29,7 +29,7 @@ public class Parameter {
         this.name = name;
         this.value = value;
     }
-    
+
     public String getName() {
         return name;
     }
@@ -45,39 +45,34 @@ public class Parameter {
     public void setValue(Object value) {
         this.value = value;
     }
-    
-    public boolean getValueAsBoolean(){
+
+    public boolean getValueAsBoolean() {
         String value = this.value.toString().toLowerCase();
-        switch (value) {
-            case "true": return true;
-            case "yes": return true;
-            case "enabled": return true;
-            case "1": return true;
-            case "1.0": return true;
-            case "false": return true;
-            case "no": return true;
-            case "disabled": return true;
-            case "0": return true;
-            case "0.0": return true;
-            default: return false;
-        }
+        return (value.equals("true")
+                || value.equals("yes")
+                || value.equals("enabled")
+                || value.equals("1")
+                || value.equals("1.0"));
     }
-    public double getValueAsDouble(){
+
+    public double getValueAsDouble() {
         try {
             return Double.valueOf(value.toString());
         } catch (NumberFormatException e) {
             return 0;
         }
     }
-    public String getValueAsString(){
+
+    public String getValueAsString() {
         return value.toString();
     }
-    public int getValueAsInteger(){
+
+    public int getValueAsInteger() {
         try {
             return Double.valueOf(value.toString()).intValue();
         } catch (NumberFormatException e) {
             return 0;
         }
     }
-    
+
 }

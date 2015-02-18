@@ -36,8 +36,18 @@ public class Base {
                     }
                 }
                 if (unit.owner == owner) {
+                    if (unit.hp < Unit.maxHp) {
+                        unit.hp++;
+                    }
                     if (power < 255) {
                         power++;
+                    }
+                }
+            }
+            if (d < 320) {
+                if (unit.owner == owner) {
+                    if (unit.hp < Unit.maxHp) {
+                        unit.hp++;
                     }
                 }
             }
@@ -50,7 +60,7 @@ public class Base {
         float a = (float) power / 255;
         if (owner != null) {
             baseColor.setImageColor(a * owner.color.r, a * owner.color.g, a * owner.color.b);
-        }else{
+        } else {
             baseColor.setImageColor(0, 0, 0);
         }
         baseColor.draw(-base.getWidth() / 4, -base.getHeight() / 4, base.getWidth() / 2, base.getHeight() / 2);

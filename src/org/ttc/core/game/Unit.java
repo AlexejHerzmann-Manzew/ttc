@@ -35,17 +35,18 @@ public class Unit implements Serializable, Cloneable {
         a = r.nextDouble() * PI * 2;
         ha = r.nextDouble() * PI * 2;
         ai = r.nextInt(2);
+        type = r.nextInt(4);
     }
 
     //Unit's fields:
     public int index = indexounit++; //serial number
     public double x, y, //coords
-            dx, dy, //delta coords (x2 - x1)
             tx, ty, //target coords
-            a, da, ta, //angle, delta angle, target angle
-            ha, hda, hta, //head angle etc.
+            a, ta, //angle, delta angle, target angle
+            ha, hta, //head angle etc.
             td; //target distance
-    public int reload, ammo, hp, timer, ai;
+    public int reload, ammo, hp, timer, ai, type;
+    public transient int lagg; //laggs' level
     public transient Player owner; //owner of this unit
     public transient Unit target; //enemy
     public transient Room room; //game room
@@ -54,15 +55,27 @@ public class Unit implements Serializable, Cloneable {
     static public double speed = 2, turnSpeed = 0.05, headTurnSpeed = 0.1;
     static public int reloadTime = 35, reloadAmmoTime = 100, ammoSize = 10, damage = 150, maxHp = 1000, size = 64;
     static public Bullet bulletPrototype;
-    static public Image bodyImage, headImage, base, baseColor, explosion[];
-    
+    static public Image bodyImage, headImage[], head2Image[], base, baseColor, explosion[];
+    static public Image rainbow;
+
     static Random r = new Random();
     static int indexounit;
-    
+
     static public void initGraphics() {
         try {
             bodyImage = new Image("textures/body.png");
-            headImage = new Image("textures/head.png");
+            headImage = new Image[4];
+            head2Image = new Image[4];
+            rainbow = new Image("textures/rainbow.png");
+            headImage[0] = new Image("textures/head.png");
+            headImage[1] = new Image("textures/head_acid.png");
+            headImage[2] = new Image("textures/head_rainbow.png");
+            headImage[3] = new Image("textures/head.png");
+            head2Image[0] = new Image("textures/head2.png");
+            head2Image[1] = new Image("textures/head2_acid.png");
+            head2Image[2] = new Image("textures/head2_rainbow.png");
+            head2Image[3] = new Image("textures/head2.png");
+
             base = new Image("textures/base.png");
             baseColor = new Image("textures/base_color.png");
 
@@ -82,7 +95,9 @@ public class Unit implements Serializable, Cloneable {
             move();
             turn();
             attack();
-            ai();
+            if (owner.ai) {
+                ai();
+            }
         } else {
             death();
         }
@@ -102,11 +117,14 @@ public class Unit implements Serializable, Cloneable {
                     return;
                 }
             }
-            hp = 1;
+            hp = maxHp;
             x = room.bases[base].x;
             y = room.bases[base].y;
-            tx = r.nextInt(300) - 150;
-            ty = r.nextInt(300) - 150;
+            tx = x + r.nextInt(300) - 150;
+            ty = y + r.nextInt(300) - 150;
+            a = r.nextDouble() * PI * 2;
+            ha = r.nextDouble() * PI * 2;
+            type = r.nextInt(4);
             ai = r.nextInt(2);
         }
     }
@@ -231,7 +249,7 @@ public class Unit implements Serializable, Cloneable {
         }
         if (ha == hta && target != null) {
             if (reload == 0) {
-                room.bullets.add(new Bullet(x, y, cos(ha) * 10, sin(ha) * 10, owner, room));
+                room.bullets.add(new Bullet(type, x, y, cos(ha) * 10, sin(ha) * 10, owner, room));
                 reload = reloadTime;
             }
             reload--;
@@ -240,6 +258,7 @@ public class Unit implements Serializable, Cloneable {
     }
 
     public final void render(Graphics g) {
+        double x = this.x, y = this.y, a = this.a, ha = this.ha;
         glTranslated(x, y, 0);
 
         if (hp < maxHp & hp > 0) {
@@ -251,6 +270,7 @@ public class Unit implements Serializable, Cloneable {
         }
         glRotated((a) / PI * 180, 0, 0, 1);
         if (hp <= 0 && timer < 30) {
+            explosion[timer / 3].setImageColor(1, 1, 1);
             explosion[timer / 3].draw(-explosion[timer / 30].getWidth() / 4, -explosion[timer / 30].getHeight() / 4, explosion[timer / 30].getWidth() / 2, explosion[timer / 30].getHeight() / 2);
         }
         if (hp > 0) {
@@ -272,8 +292,9 @@ public class Unit implements Serializable, Cloneable {
     }
 
     public void renderHead(Graphics g) {
-        headImage.setImageColor(owner.color.r, owner.color.g, owner.color.b, (float) timer / 255f);
-        headImage.draw(-bodyImage.getWidth() / 4, -bodyImage.getHeight() / 4, bodyImage.getWidth() / 2, bodyImage.getHeight() / 2);
+        headImage[type].setImageColor(owner.color.r, owner.color.g, owner.color.b, (float) timer / 255f);
+        headImage[type].draw(-bodyImage.getWidth() / 4, -bodyImage.getHeight() / 4, bodyImage.getWidth() / 2, bodyImage.getHeight() / 2);
+        head2Image[type].draw(-bodyImage.getWidth() / 4, -bodyImage.getHeight() / 4, bodyImage.getWidth() / 2, bodyImage.getHeight() / 2);
     }
 
 }

@@ -9,6 +9,7 @@ import org.newdawn.slick.Color;
  * @author yew_mentzaki
  */
 public class Player implements Serializable{
+    public boolean ai;
 
     public Player(String name, int color) {
         this.name = name;
@@ -18,5 +19,6 @@ public class Player implements Serializable{
     }
     public String name;
     public Color color = Color.decode("#ffffff");
+    public int colorn = 0;
     int camerax, cameray;
 }
