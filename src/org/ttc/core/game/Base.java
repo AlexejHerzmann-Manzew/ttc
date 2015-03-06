@@ -26,6 +26,7 @@ public class Base {
 
     public void tick() {
         for (Unit unit : room.units()) {
+            if(unit.hp < 0)continue;
             double d = sqrt(pow(unit.x - x, 2) + pow(unit.y - y, 2));
             if (d < 160) {
                 if (unit.owner != owner) {
@@ -36,9 +37,6 @@ public class Base {
                     }
                 }
                 if (unit.owner == owner) {
-                    if (unit.hp < Unit.maxHp) {
-                        unit.hp++;
-                    }
                     if (power < 255) {
                         power++;
                     }
@@ -56,15 +54,27 @@ public class Base {
 
     public final void render(Graphics g) {
         glTranslated(x, y, 0);
-        base.draw(-base.getWidth() / 4, -base.getHeight() / 4, base.getWidth() / 2, base.getHeight() / 2);
+        baseImage.draw(-baseImage.getWidth() / 4, -baseImage.getHeight() / 4, baseImage.getWidth() / 2, baseImage.getHeight() / 2);
         float a = (float) power / 255;
         if (owner != null) {
             baseColor.setImageColor(a * owner.color.r, a * owner.color.g, a * owner.color.b);
         } else {
             baseColor.setImageColor(0, 0, 0);
         }
-        baseColor.draw(-base.getWidth() / 4, -base.getHeight() / 4, base.getWidth() / 2, base.getHeight() / 2);
+        baseColor.draw(-baseImage.getWidth() / 4, -baseImage.getHeight() / 4, baseImage.getWidth() / 2, baseImage.getHeight() / 2);
         glTranslated(-x, -y, 0);
+    }
+    public final void renderInterface(Graphics g){
+        double x = this.x, y = this.y;
+        glTranslated(x/20+75, y/20+75, 0);
+        float a = (float) power / 255;
+        if (owner != null) {
+            basePicture.setImageColor(a * owner.color.r, a * owner.color.g, a * owner.color.b);
+        } else {
+            basePicture.setImageColor(0, 0, 0);
+        }
+        basePicture.draw(-basePicture.getWidth() / 4, -basePicture.getHeight() / 4, basePicture.getWidth() / 2, basePicture.getHeight() / 2);
+        glTranslated(-x/20-75, -y/20-75, 0);
     }
 
 }

@@ -20,7 +20,6 @@ import org.newdawn.slick.Color;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Image;
 import org.newdawn.slick.SlickException;
-import static org.ttc.core.game.Unit.indexounit;
 
 /**
  *
@@ -32,8 +31,9 @@ public class Room {
     ArrayList<Bullet> bullets = new ArrayList<Bullet>();
     Base[] bases = new Base[8];
     public Player[] players = new Player[8];
-    Image grass;
+    public static Image grass;
     public int player;
+    int serialnumber;
 
     public Unit[] units() {
         Unit[] u = new Unit[units.size()];
@@ -61,43 +61,26 @@ public class Room {
         return SerializationUtils.serialize(units()[index]);
     }
 
-    public boolean setUnit(byte[] bytes) {
+    public boolean setUnit(int index, byte[] bytes) {
         Unit unit = (Unit) SerializationUtils.deserialize(bytes);
-        for (Unit u : units()) {
-            if (u.index == unit.index) {
-                /*
-                 if ((abs(u.x - unit.x) > 50 && abs(u.y - unit.y) > 50)) {
-                 if (u.lagg < 3) {
-                 u.lagg++;
-                 System.out.println("X: " + abs(u.x - unit.x));
-                 System.out.println("Y: " + abs(u.y - unit.y));
-                 return false;
-                 } else {
-                 u.lagg = 0;
-                 }
-                 if (u.timer > 100) {
-                 return false;
-                 }
-                 }*/
-                u.x = unit.x;
-                u.y = unit.y;
-                u.tx = unit.tx;
-                u.ty = unit.ty;
-                u.a = unit.a;
-                u.ta = unit.ta;
-                u.ha = unit.ha;
-                u.hta = unit.hta;
-                u.type = unit.type;
-                u.reload = unit.reload;
-                u.ammo = unit.ammo;
-                u.hp = unit.hp;
-                u.timer = unit.timer;
-                u.ai = unit.ai;
-                u.lagg = 0;
-                return true;
-            }
-        }
-        return false;
+        Unit u = units()[index];
+        u.x = unit.x;
+        u.y = unit.y;
+        u.tx = unit.tx;
+        u.ty = unit.ty;
+        u.a = unit.a;
+        u.ta = unit.ta;
+        u.ha = unit.ha;
+        u.hta = unit.hta;
+        u.type = unit.type;
+        u.reload = unit.reload;
+        u.ammo = unit.ammo;
+        u.hp = unit.hp;
+        u.timer = unit.timer;
+        u.ai = unit.ai;
+        u.lagg = 0;
+        return true;
+
     }
 
     public Room(int players) {
@@ -107,20 +90,19 @@ public class Room {
         for (int i = 0; i < 8; i++) {
             bases[i] = new Base(this, (int) (cos((float) i / 4 * Math.PI) * 1000), (int) (sin((float) i / 4 * Math.PI) * 1000), this.players[i / (8 / players)]);
         }
-
-        for (int i = 0; i < players; i++) {
-            for (int j = 0; j < 15; j++) {
-                Unit unit = new Unit(this, 0, 0, i);
+        for (int i = 0; i < 8; i++) {
+            for (int j = 0; j < 4; j++) {
+                Unit unit = new Unit(this, 0, 0, bases[i]);
                 units.add(unit);
-                if(j==0){
-                    this.players[i].camerax = (int) (unit.x - 400);
-                    this.players[i].cameray = (int) (unit.y - 300);
+                if (j == 0) {
+                    unit.base.owner.camerax = (int) (unit.x - 400);
+                    unit.base.owner.cameray = (int) (unit.y - 300);
                 }
             }
         }
         t.start();
     }
-    public Timer t = new Timer(10, new ActionListener() {
+    public Timer t = new Timer(15, new ActionListener() {
 
         public void actionPerformed(ActionEvent e) {
 
@@ -135,74 +117,70 @@ public class Room {
 
             }
             for (Bullet bullet : bullets()) {
-                if (bullet.t >= 8|bullet.t2 <= 0) {
+                if (bullet.t >= 8 | bullet.t2 <= 0) {
                     bullets.remove(bullet);
                 }
             }
         }
     });
 
-    public Order[] getOrders(){
+    public Order[] getOrders() {
         Order[] order = new Order[selected.size()];
         for (int i = 0; i < selected.size(); i++) {
             Unit u = selected.get(i);
-            order[i] = new Order(u.index, (int)u.tx, (int)u.ty);
+            order[i] = new Order(units.indexOf(u), (int) u.tx, (int) u.ty, (int) u.x, (int) u.y, (double) u.a, (double)u.ha);
         }
         return order;
     }
-    public void setOrders(Order[] orders){
-        for (Order o : orders) {
-            for (Unit u : units()) {
-                if(u.index == o.uid){
-                    u.tx = o.tx;
-                    u.ty = o.ty;
-                }
-            }
-        }
-    }
-    
-    public void initGraphics() {
-        try {
-            grass = new Image("textures/grass.png");
 
-        } catch (SlickException ex) {
-            Logger.getLogger(Room.class.getName()).log(Level.SEVERE, null, ex);
+    public void setOrders(Order[] orders) {
+        for (Order o : orders) {
+            Unit u = units()[o.uid];
+            u.tx = o.tx;
+            u.ty = o.ty;
+            /*
+            u.x = o.x;
+            u.y = o.y;
+                    */
+            u.a = o.a;
+            u.ha = o.ha;
         }
-        Unit.initGraphics();
     }
+
     private Graphics g = new Graphics();
     private ArrayList<Unit> selected = new ArrayList<Unit>();
 
     public void render(int player) {
-        if (Keyboard.isKeyDown(Keyboard.KEY_LEFT) || Keyboard.isKeyDown(Keyboard.KEY_A)) {
-            players[player].camerax -= 5;
+        if (t.isRunning()) {
+            if (Keyboard.isKeyDown(Keyboard.KEY_LEFT) || Keyboard.isKeyDown(Keyboard.KEY_A)) {
+                players[player].camerax -= 5;
+            }
+            if (Keyboard.isKeyDown(Keyboard.KEY_RIGHT) || Keyboard.isKeyDown(Keyboard.KEY_D)) {
+                players[player].camerax += 5;
+            }
+            if (Keyboard.isKeyDown(Keyboard.KEY_UP) || Keyboard.isKeyDown(Keyboard.KEY_W)) {
+                players[player].cameray -= 5;
+            }
+            if (Keyboard.isKeyDown(Keyboard.KEY_DOWN) || Keyboard.isKeyDown(Keyboard.KEY_S)) {
+                players[player].cameray += 5;
+            }
         }
-        if (Keyboard.isKeyDown(Keyboard.KEY_RIGHT) || Keyboard.isKeyDown(Keyboard.KEY_D)) {
-            players[player].camerax += 5;
-        }
-        if (Keyboard.isKeyDown(Keyboard.KEY_UP) || Keyboard.isKeyDown(Keyboard.KEY_W)) {
-            players[player].cameray -= 5;
-        }
-        if (Keyboard.isKeyDown(Keyboard.KEY_DOWN) || Keyboard.isKeyDown(Keyboard.KEY_S)) {
-            players[player].cameray += 5;
-        }
+        int cx = players[player].camerax;
+        int cy = players[player].cameray;
 
         try {
-            int cx = players[player].camerax;
-            int cy = players[player].cameray;
 
             for (int x = cx / 128 - 1; x <= cx / 128 + Display.getWidth() / 128 + 1; x += 1) {
                 for (int y = cy / 128 - 1; y <= cy / 128 + Display.getHeight() / 128 + 1; y += 1) {
                     grass.draw(x * 128 - cx, y * 128 - cy);
                 }
             }
-
             GL11.glTranslated(-cx, -cy, 0);
 
             for (Base base : bases) {
                 base.render(g);
             }
-            if (Mouse.isButtonDown(1)) {
+            if (Mouse.isButtonDown(1) && t.isRunning()) {
                 players[player].camerax -= Mouse.getDX();
                 players[player].cameray += Mouse.getDY();
             }
@@ -211,6 +189,18 @@ public class Room {
             }
             int mx = players[player].camerax + Mouse.getX();
             int my = players[player].cameray + Display.getHeight() - Mouse.getY();
+            if (t.isRunning()) {
+                if (Mouse.getX() < 25) {
+                    players[player].camerax -= 5;
+                } else if (Mouse.getX() > Display.getWidth() - 25) {
+                    players[player].camerax += 5;
+                }
+                if (Mouse.getY() < 25) {
+                    players[player].cameray += 5;
+                } else if (Mouse.getY() > Display.getHeight() - 25) {
+                    players[player].cameray -= 5;
+                }
+            }
             for (Unit unit : units()) {
                 unit.render(g);
                 if (unit.owner == players[player] && Mouse.isButtonDown(0) && !selected.contains(unit)) {
@@ -223,19 +213,47 @@ public class Room {
                     selected.remove(unit);
                 }
             }
-            for (Unit unit : selected) {
-                g.setColor(Color.yellow);
-                g.drawLine(mx, my, (int) unit.x, (int) unit.y);
-                unit.tx = mx;
-                unit.ty = my;
+            if (t.isRunning()) {
+                for (Unit unit : selected) {
+                    g.setColor(Color.yellow);
+                    g.drawLine(mx, my, (int) unit.x, (int) unit.y);
+
+                    unit.tx = mx;
+                    unit.ty = my;
+                }
             }
             for (Bullet bullet : bullets()) {
-                bullet.render(g);
+                if (bullet != null) {
+                    bullet.render(g);
+                }
             }
+
             GL11.glTranslated(cx, cy, 0);
-
+            GL11.glLoadIdentity();
+            if (!t.isRunning()) {
+                return;
+            }
+            for (Base base : bases) {
+                base.renderInterface(g);
+            }
+            for (Unit unit : units()) {
+                unit.renderInterface(g);
+            }
         } catch (Exception e) {
+            e.printStackTrace();
         }
-    }
 
+        g.setColor(Color.black);
+        g.drawRect(cx / 20 + 75, cy / 20 + 75, Display.getWidth() / 20, Display.getHeight() / 20);
+        for (int i = 0; i < 5; i++) {
+            Unit.iconImage[i].draw(10, 170 + i * 80, 70, 70);
+            if ((Mouse.isButtonDown(0) && sqrt(pow((45) - (Mouse.getX()), 2) + pow((170 + i * 80 + 35) - (Display.getHeight() - Mouse.getY()), 2)) < 35) | Keyboard.isKeyDown(Keyboard.KEY_1 + i)) {
+                players[player].mode = i;
+            }
+        }
+        modeSwitch = (modeSwitch * 10 + 170 + players[player].mode * 80) / 11;
+        Unit.iconImage[5].draw(80, (int) modeSwitch, 70, 70);
+
+    }
+    double modeSwitch = 170;
 }

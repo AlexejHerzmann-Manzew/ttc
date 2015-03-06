@@ -33,14 +33,19 @@ public class Bullet implements Serializable {
     int t = 0, t2 = 255;
 
     public void render(Graphics g) {
-        if (type == 0 | type == 3) {
+        if (type == 0) {
             glTranslated(x, y, 0);
-            explosion[t].setImageColor(1, 1, 1);
+            explosion[t].setImageColor(1, 0.5f, 0);
             explosion[t].draw(-explosion[t].getWidth() / 8, -explosion[t].getHeight() / 8, explosion[t].getWidth() / 4, explosion[t].getHeight() / 4);
             glTranslated(-x, -y, 0);
         } else if (type == 1) {
             glTranslated(x, y, 0);
             explosion[t].setImageColor(0, 1, 0);
+            explosion[t].draw(-explosion[t].getWidth() / 6, -explosion[t].getHeight() / 6, explosion[t].getWidth() / 3, explosion[t].getHeight() / 3);
+            glTranslated(-x, -y, 0);
+        } else if (type == 3) {
+            glTranslated(x, y, 0);
+            explosion[t].setImageColor(0, 1f, 1);
             explosion[t].draw(-explosion[t].getWidth() / 6, -explosion[t].getHeight() / 6, explosion[t].getWidth() / 3, explosion[t].getHeight() / 3);
             glTranslated(-x, -y, 0);
         } else if (type == 2) {
@@ -87,14 +92,53 @@ public class Bullet implements Serializable {
             }
             if (t > 0 & t < 8) {
                 t++;
+                for (Unit unit : room.units()) {
+                    if (sqrt(pow(unit.x - x, 2) + pow(unit.y - y, 2)) < size) {
+                        unit.hp -= damage / 4;
+                    }
+                }
             } else if (t == 0) {
                 x += dx;
                 y += dy;
                 for (Unit unit : room.units()) {
                     if (unit.owner != owner && sqrt(pow(unit.x - x, 2) + pow(unit.y - y, 2)) < size / 2) {
-                        unit.hp -= damage;
+                        unit.hp -= damage * 3;
                         t = 1;
                     }
+                }
+            }
+        } else if (type == 3) {
+            t2--;
+            if (t2 % 2 == 0) {
+                return;
+            }
+            if (t2 <= 0) {
+                t += 1;
+            }
+            if (t > 0 & t < 8) {
+                t++;
+            } else if (t == 0) {
+                x += dx;
+                y += dy;
+                Unit target = null;
+                double dist = 10000;
+                for (Unit unit : room.units()) {
+                    if (unit.owner != owner && unit.hp > 0) {
+                        double distance = sqrt(pow(unit.x - x, 2) + pow(unit.y - y, 2));
+                        if (distance < size / 2) {
+                            unit.hp -= damage;
+                            t = 1;
+                            break;
+                        } else if (distance < dist) {
+                            dist = distance;
+                            target = unit;
+                        }
+                    }
+                }
+                if (target != null) {
+                    double a = atan2(target.y - y, target.x - x);
+                    dx = (dx * 12 + (cos(a) * 12))/13;
+                    dy = (dy * 12 + (sin(a) * 12))/13;
                 }
             }
         } else {
@@ -108,7 +152,7 @@ public class Bullet implements Serializable {
                 x += dx;
                 y += dy;
                 for (Unit unit : room.units()) {
-                    if (unit.owner != owner && sqrt(pow(unit.x - x, 2) + pow(unit.y - y, 2)) < size / 2) {
+                    if (unit.owner != owner && unit.hp > 0 && sqrt(pow(unit.x - x, 2) + pow(unit.y - y, 2)) < size / 2) {
                         unit.hp -= damage;
                         t = 1;
                         break;

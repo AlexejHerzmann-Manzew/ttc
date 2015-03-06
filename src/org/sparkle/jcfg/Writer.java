@@ -36,7 +36,7 @@ public class Writer {
     public static void writeToFile(JCFG jcfg, File f) throws FileNotFoundException{
         PrintWriter pw = new PrintWriter(f);
         for (Parameter p : jcfg.list()) {
-            pw.println(p.getName() + ": " + p.getValueAsString());
+            pw.println(p.getName() + ": " + p.getValueAsString().replace("#", "\\#").replace("\n", "\\n"));
         }
         pw.close();
     }
