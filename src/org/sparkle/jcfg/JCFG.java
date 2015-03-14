@@ -57,7 +57,7 @@ public class JCFG {
             }
             i++;
         }
-        return null;
+        return new Parameter(name, null);
     }
 
     public void add(Parameter param) {

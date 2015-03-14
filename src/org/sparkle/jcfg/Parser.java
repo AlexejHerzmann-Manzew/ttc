@@ -30,7 +30,7 @@ public final class Parser {
 
         public static JCFG parse(File file) throws FileNotFoundException {
         JCFG cfg = new JCFG();
-        Scanner scanner = new Scanner(file);
+        Scanner scanner = new Scanner(file, "UTF8");
         while (scanner.hasNextLine()) {
             String l = scanner.nextLine();
             char[] ch = l.toCharArray();

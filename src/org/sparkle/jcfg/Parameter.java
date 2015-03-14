@@ -72,6 +72,8 @@ public class Parameter {
             return Double.valueOf(value.toString()).intValue();
         } catch (NumberFormatException e) {
             return 0;
+        } catch (NullPointerException e) {
+            return 0;
         }
     }
 
