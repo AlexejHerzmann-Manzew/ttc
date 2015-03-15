@@ -254,7 +254,13 @@ public class Unit implements Serializable, Cloneable {
         }
         if (ha == hta && target != null) {
             if (reload == 0) {
-                room.bullets.add(new Bullet(type, x, y, cos(ha) * 10, sin(ha) * 10, owner, room));
+                switch(type){
+                    case(0):room.bullets.add(new Shell(x, y, cos(ha) * 10, sin(ha) * 10, owner, room));break;
+                    case(1):room.bullets.add(new Acid(x, y, cos(ha) * 10, sin(ha) * 10, owner, room));break;
+                    case(2):room.bullets.add(new Rainbow(x, y, cos(ha) * 10, sin(ha) * 10, owner, room));break;
+                    case(3):room.bullets.add(new Plazma(x, y, cos(ha) * 10, sin(ha) * 10, owner, room));break;
+                    
+                }
                 reload = reloadTime;
             }
             reload--;
