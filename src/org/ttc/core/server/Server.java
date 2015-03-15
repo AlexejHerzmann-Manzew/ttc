@@ -9,6 +9,7 @@ import org.sparkle.janette.server.ServerConnection;
  */
 public class Server {
     public static ServerHandler waiting = null;
+    /*
     public static void main(String[] args) {
         ServerConnection sc = new ServerConnection(20150, ServerHandler.class, 100);
         try {
@@ -17,4 +18,5 @@ public class Server {
             ex.printStackTrace();
         }
     }
+    */
 }
