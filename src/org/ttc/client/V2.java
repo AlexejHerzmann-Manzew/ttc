@@ -11,6 +11,8 @@ import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Random;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.imageio.ImageIO;
@@ -36,11 +38,10 @@ import org.sparkle.jcfg.Parser;
 import org.sparkle.jcfg.Writer;
 import org.ttc.core.game.Room;
 import org.ttc.core.game.Unit;
-import sun.font.TrueTypeFont;
 
 /**
  *
- * @author yew_mentzaki
+ * @author yew_mentzaki & whizzpered
  */
 public class V2 {
 
@@ -92,6 +93,7 @@ public class V2 {
     }
     private static int currentLocale;
     private static JCFG locales[] = new JCFG[3];
+    static int escTimer = 0;
 
     private static class locale extends button {
 
@@ -268,6 +270,14 @@ public class V2 {
 
     public static void setUpRender() {
         Thread renderingThread;
+       
+        new Timer().schedule(new TimerTask() {
+            public void run() {
+                
+            }
+        },0,10);
+        
+        
         renderingThread = new Thread("Main Rendering Thread") {
 
             @Override
@@ -424,7 +434,12 @@ public class V2 {
 
                     });
 
-                    int escTimer = 0;
+                    
+                    new Timer().schedule(new TimerTask() {
+                            public void run() {
+                            if (escTimer > 0) {
+                            escTimer--;
+                        }}},0,10);
                     final Music nowPlaying = new Music("music/Steve_Combs_Five.ogg");
 
                     nowPlaying.loop();
@@ -474,9 +489,6 @@ public class V2 {
                     }
 
                     while (!Display.isCloseRequested()) {
-                        if (escTimer > 0) {
-                            escTimer--;
-                        }
                         display_width = Display.getWidth();
                         display_height = Display.getHeight();
                         GL11.glClearColor(1, 1, 1, 1);

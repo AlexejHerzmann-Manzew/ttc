@@ -5,7 +5,7 @@ import org.newdawn.slick.Graphics;
 
 /**
  *
- * @author yew_mentzaki
+ * @author yew_mentzaki & whizzpered
  */
 public class Bullet implements Serializable {
 

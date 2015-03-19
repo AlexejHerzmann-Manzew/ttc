@@ -6,7 +6,7 @@ import org.newdawn.slick.Color;
 
 /**
  *
- * @author yew_mentzaki
+ * @author yew_mentzaki & whizzpered
  */
 public class Player implements Serializable {
 

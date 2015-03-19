@@ -16,7 +16,7 @@ import org.newdawn.slick.Image;
 
 /**
  *
- * @author yew_mentzaki
+ * @author yew_mentzaki & whizzpered
  */
 public class Room {
 
