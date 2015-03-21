@@ -58,7 +58,6 @@ public class Unit implements Serializable, Cloneable {
 
     static Random r = new Random();
 
-
     static public void initGraphics() {
         try {
             bodyImage = new Image("textures/body.png");
@@ -132,31 +131,33 @@ public class Unit implements Serializable, Cloneable {
     }
 
     public void ai() {
-        if (ai == 0) {
-            double dist = 5000;
-            Base base = null;
-            for (Base b : room.bases) {
-                if (b.owner == owner) {
-                    continue;
+        if (r.nextInt(100) == 0) {
+            if (ai == 0) {
+                double dist = 5000;
+                Base base = null;
+                for (Base b : room.bases) {
+                    if (b.owner == owner) {
+                        continue;
+                    }
+                    double d = sqrt(pow(b.x - x, 2) + pow(b.y - y, 2));
+                    if (d < dist) {
+                        base = b;
+                        dist = d;
+                    }
                 }
-                double d = sqrt(pow(b.x - x, 2) + pow(b.y - y, 2));
-                if (d < dist) {
-                    base = b;
-                    dist = d;
+                if (base != null) {
+                    tx = base.x;
+                    ty = base.y;
                 }
-            }
-            if (base != null) {
-                tx = base.x;
-                ty = base.y;
-            }
-        } else {
-            for (Unit unit : room.units()) {
-                double d = sqrt(pow(unit.x - x, 2) + pow(unit.y - y, 2));
-                if ((target == null || d < td) & unit.hp > 0 && unit.owner != owner) {
-                    target = unit;
-                    tx = unit.x;
-                    ty = unit.y;
-                    td = d;
+            } else {
+                for (Unit unit : room.units()) {
+                    double d = sqrt(pow(unit.x - x, 2) + pow(unit.y - y, 2));
+                    if ((target == null || d < td) & unit.hp > 0 && unit.owner != owner) {
+                        target = unit;
+                        tx = unit.x;
+                        ty = unit.y;
+                        td = d;
+                    }
                 }
             }
         }
@@ -254,12 +255,20 @@ public class Unit implements Serializable, Cloneable {
         }
         if (ha == hta && target != null) {
             if (reload == 0) {
-                switch(type){
-                    case(0):room.bullets.add(new Shell(x, y, cos(ha) * 10, sin(ha) * 10, owner, room));break;
-                    case(1):room.bullets.add(new Acid(x, y, cos(ha) * 10, sin(ha) * 10, owner, room));break;
-                    case(2):room.bullets.add(new Rainbow(x, y, cos(ha) * 10, sin(ha) * 10, owner, room));break;
-                    case(3):room.bullets.add(new Plazma(x, y, cos(ha) * 10, sin(ha) * 10, owner, room));break;
-                    
+                switch (type) {
+                    case (0):
+                        room.bullets.add(new Shell(x, y, cos(ha) * 10, sin(ha) * 10, owner, room));
+                        break;
+                    case (1):
+                        room.bullets.add(new Acid(x, y, cos(ha) * 10, sin(ha) * 10, owner, room));
+                        break;
+                    case (2):
+                        room.bullets.add(new Rainbow(x, y, cos(ha) * 10, sin(ha) * 10, owner, room));
+                        break;
+                    case (3):
+                        room.bullets.add(new Plazma(x, y, cos(ha) * 10, sin(ha) * 10, owner, room));
+                        break;
+
                 }
                 reload = reloadTime;
             }

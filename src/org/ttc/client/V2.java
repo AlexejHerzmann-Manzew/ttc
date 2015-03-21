@@ -439,7 +439,7 @@ public class V2 {
                             public void run() {
                             if (escTimer > 0) {
                             escTimer--;
-                        }}},0,10);
+                        }}},0,30);
                     final Music nowPlaying = new Music("music/Steve_Combs_Five.ogg");
 
                     nowPlaying.loop();

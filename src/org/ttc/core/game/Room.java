@@ -22,8 +22,8 @@ public class Room {
 
     ArrayList<Unit> units = new ArrayList<Unit>();
     ArrayList<Bullet> bullets = new ArrayList<Bullet>();
-    Base[] bases = new Base[8];
-    public Player[] players = new Player[8];
+    Base[] bases = new Base[17];
+    public Player[] players = new Player[9];
     public static Image grass;
     public int player;
     int serialnumber;
@@ -80,11 +80,15 @@ public class Room {
         for (int i = 0; i < players; i++) {
             this.players[i] = new Player("none", 0);
         }
+        this.players[8] = new Player("neutral", 0);
+        this.players[8].color = new Color(128, 128, 128);
         for (int i = 0; i < 8; i++) {
             bases[i] = new Base(this, (int) (cos((float) i / 4 * Math.PI) * 1000), (int) (sin((float) i / 4 * Math.PI) * 1000), this.players[i / (8 / players)]);
+            bases[i + 8] = new Base(this, (int) (cos((float) i / 4 * Math.PI + (Math.PI / 8)) * 500), (int) (sin((float) i / 4 * Math.PI + (Math.PI / 8)) * 500), this.players[i / (8 / players)]);
         }
-        for (int i = 0; i < 8; i++) {
-            for (int j = 0; j < 4; j++) {
+        bases[16] = new Base(this, (int) (0), (int) (0), this.players[8]);
+        for (int i = 0; i < 17; i++) {
+            for (int j = 0; j < 2; j++) {
                 Unit unit = new Unit(this, 0, 0, bases[i]);
                 units.add(unit);
                 if (j == 0) {
@@ -121,7 +125,7 @@ public class Room {
         Order[] order = new Order[selected.size()];
         for (int i = 0; i < selected.size(); i++) {
             Unit u = selected.get(i);
-            order[i] = new Order(units.indexOf(u), (int) u.tx, (int) u.ty, (int) u.x, (int) u.y, (double) u.a, (double)u.ha);
+            order[i] = new Order(units.indexOf(u), (int) u.tx, (int) u.ty, (int) u.x, (int) u.y, (double) u.a, (double) u.ha);
         }
         return order;
     }
@@ -132,9 +136,9 @@ public class Room {
             u.tx = o.tx;
             u.ty = o.ty;
             /*
-            u.x = o.x;
-            u.y = o.y;
-                    */
+             u.x = o.x;
+             u.y = o.y;
+             */
             u.a = o.a;
             u.ha = o.ha;
         }
