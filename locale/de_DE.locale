@@ -10,8 +10,8 @@ aqua: Blaugruenen
 blue: Blau
 pink: Rosa
 choco: Braun
-raum: Druecken Sie die Leer um fortzufahren.
-example1: Druecken Sie WASD oder Pfeiltasten, um die Kamera zu bewegen oder um den Cursor auf die Bezeichnung Ort. Auch können Sie die rechte Maustaste drücken und ziehen Sie Ihre Kamera.
+space: Druecken Sie die Leer um fortzufahren.
+example1: Druecken Sie WASD oder Pfeiltasten, um die Kamera zu bewegen oder um den Cursor auf die Bezeichnung Ort. Auch können Sie die rechte Maustaste druecken und ziehen Sie Ihre Kamera.
 example2: So verschieben Sie Ihre Tanks druecken Sie die linke Maustaste auf sie und ziehen Sie, um den Zielpunkt.
 example3: Hauptziel im Spiel ist, feindliche Basen zu erfassen. Um es zu erfassen muessen Sie Ihre Tanks zu leeren feindliche Basis zu bringen und warten einige Zeit.
 example4: Hier ist ein 4 Tanktypen:\nSchiesspulver Kanone - Dreifach-Schaden auf ein Ziel.\nSaeure Kanone - Doppel Schaeden an JEDES Ziel im toedlichen Bereich.\nRegenbogen-Generator - Schaeden an jedem Feind auf kurze Linie.\nPlasmakanone - Kugeln mit Leitsystem.
