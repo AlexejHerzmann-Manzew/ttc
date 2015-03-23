@@ -10,3 +10,8 @@ aqua: Aqua
 blue: Blue
 pink: Hot Pink
 choco: Choco
+space: Press Space to continue.
+example1: Press WASD or arrow buttons to move the camera or bring the cursor to the designation place. Also you may press the right mouse button and drag your camera.
+example2: To move your tanks press the left mouse button on them and drag to the target point.
+example3: Main aim in game is the enemy bases capturing. To capture it you must bring your tanks to empty enemy base and wait some time.
+example4: Here is a 4 tank types:\nGunpowder cannon - triple damage to one target.\nAcid cannon - double damage to EVERY target in the lethal area.\nRainbow generator - damage to every enemy on short line.\nPlasma cannon - bullets with guidance system.
