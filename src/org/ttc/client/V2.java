@@ -44,205 +44,12 @@ import org.ttc.core.game.Unit;
  * @author yew_mentzaki & whizzpered
  */
 public class V2 {
-
-    private static abstract class button {
-
-        int x, y, w, wp = 1;
-        String text;
-        Color color;
-        boolean bp;
-
-        public button(int x, int y, int w, String text, Color c) {
-            this.x = x;
-            this.y = y;
-            this.w = w;
-            this.text = text;
-            this.color = c;
-        }
-        public void render() {
-            int x = this.x + Display.getWidth() / 2;
-            int y = this.y;
-            int w = this.w + wp;
-            gui[0].setImageColor(color.r, color.g, color.b);
-            gui[1].setImageColor(color.r, color.g, color.b);
-            gui[2].setImageColor(color.r, color.g, color.b);
-            gui[0].draw(x - w / 2 - 16, y);
-            gui[1].draw(x - w / 2, y, w, 50);
-            gui[2].draw(x + w / 2, y);
-            String text = locales[currentLocale].get(this.text).getValueAsString();
-            fontRender.drawString(text, x - fontRender.getWidth(text) / 2, y + 3, Color.black);
-            int mx = Mouse.getX();
-            int my = Display.getHeight() - Mouse.getY();
-
-            if (Math.abs(mx - x) < (w + 32) / 2 && Math.abs((y + 25) - my) < 25) {
-                if (wp < 16) {
-                    wp *= 2;
-                }
-                if (bp && !Mouse.isButtonDown(0)) {
-                    click();
-                }
-            } else {
-                if (wp > 1) {
-                    wp /= 2;
-                }
-            }
-            bp = Mouse.isButtonDown(0);
-        }
-
-        abstract public void click();
-    }
-    private static int currentLocale;
-    private static JCFG locales[] = new JCFG[3];
+    static int currentLocale;
+    static JCFG locales[] = new JCFG[3];
     static int escTimer = 0;
 
-    private static class locale extends button {
-
-        Image localeIcons[], smallIcons[], back, small;
-
-        public locale(int x, int y) {
-            super(x, y, 69, null, null);
-            try {
-                localeIcons = new Image[]{
-                    new Image("textures/gui/locale_eng.png"),
-                    new Image("textures/gui/locale_deu.png"),
-                    new Image("textures/gui/locale_rus.png")
-                };
-                smallIcons = new Image[]{
-                    new Image("textures/gui/locale_eng_small.png"),
-                    new Image("textures/gui/locale_deu_small.png"),
-                    new Image("textures/gui/locale_rus_small.png")
-                };
-                back = new Image("textures/gui/locale.png");
-                small = new Image("textures/gui/locale_small.png");
-            } catch (SlickException ex) {
-                Logger.getLogger(V2.class.getName()).log(Level.SEVERE, null, ex);
-            }
-        }
-
-        @Override
-        public void render() {
-
-            back.draw(x, y);
-            int sec = currentLocale+1;
-            if(sec >= 3)sec-=3;
-            int thi = currentLocale+2;
-            if(thi >= 3)thi-=3;
-            smallIcons[sec].draw(x + 4, y + 4, 16, 12);
-            smallIcons[thi].draw(x + 4, y + 18, 16, 12);
-            small.draw(x + 4, y + 4);
-            small.draw(x + 4, y + 18);
-            localeIcons[currentLocale].draw(x+wp-1, y);
-            
-
-            int mx = Mouse.getX();
-            int my = Display.getHeight() - Mouse.getY();
-
-            if (Math.abs((x + wp/2)+35 - mx) < (w + wp) / 2 && Math.abs((y + 25) - my) < 25) {
-                if (wp < 16) {
-                    wp *= 2;
-                }
-                if (bp && !Mouse.isButtonDown(0)) {
-
-                    currentLocale++;
-                    if (currentLocale >= 3) {
-                        currentLocale -= 3;
-                    }
-                }
-            } else {
-                if (wp > 1) {
-                    wp /= 2;
-                }
-            }
-            bp = Mouse.isButtonDown(0);
-        }
-
-        @Override
-        public void click() {
-
-        }
-
-    }
-
-    private static class switcher extends button {
-
-        public boolean value;
-        int wp = 1;
-        Image picture[];
-        boolean bp;
-        int sx;
-
-        public switcher(int x, int y, boolean value, String picture) {
-            super(x, y, 0, "", null);
-            try {
-                this.x = x;
-                this.y = y;
-                if (value) {
-                    this.color = new Color(0, 255, 0);
-                    sx = 52;
-                } else {
-                    this.color = new Color(255, 0, 0);
-                    sx = 0;
-                }
-                this.picture = new Image[2];
-                this.value = value;
-
-                this.picture[0] = new Image(picture + "_enabled.png");
-                this.picture[1] = new Image(picture + "_disabled.png");
-
-            } catch (Exception ex) {
-                Logger.getLogger(V2.class.getName()).log(Level.SEVERE, null, ex);
-            }
-        }
-
-        @Override
-        public void render() {
-            int x = this.x + Display.getWidth() / 2;
-            int y = this.y;
-            int w = 100;
-
-            if (value) {
-                if (color.r - 0.1f >= 0) {
-                    color.r -= 0.1f;
-                    color.g += 0.1f;
-                }
-                sx = (52 + sx + sx) / 3;
-            } else {
-                if (color.r + 0.1f <= 1) {
-                    color.r += 0.1f;
-                    color.g -= 0.1f;
-                }
-                sx = (0 + sx + sx) / 3;
-            }
-
-            gui[4].setImageColor(color.r, color.g, color.b);
-            gui[4].draw(x - w / 2, y);
-            picture[0].draw(x - w / 2 + 25 - picture[0].getWidth() / 2, y + 25 - picture[0].getHeight() / 2);
-            picture[1].draw(x + w / 2 - 25 - picture[0].getWidth() / 2, y + 25 - picture[0].getHeight() / 2);
-            gui[3].draw(x - w / 2 + sx, y);
-            int mx = Mouse.getX();
-            int my = Display.getHeight() - Mouse.getY();
-
-            if (Math.abs(mx - x) < w / 2 && Math.abs((y + 25) - my) < 25) {
-                if (wp < 16) {
-                    wp *= 2;
-                }
-                if (bp && !Mouse.isButtonDown(0)) {
-                    value = !value;
-                    click();
-                }
-            } else {
-                if (wp > 1) {
-                    wp /= 2;
-                }
-            }
-            bp = Mouse.isButtonDown(0);
-        }
-
-        @Override
-        public void click() {
-
-        }
-    }
+    
+    
 
     public static int display_width, display_height;
     static Room room;
@@ -353,13 +160,13 @@ public class V2 {
                     gui[3] = new Image("textures/gui/button_trackbar.png");
                     gui[4] = new Image("textures/gui/button_trackbar2.png");
                     gui[1].setFilter(GL11.GL_NEAREST);
-                    ArrayList<button> buttons = new ArrayList<button>();
+                    ArrayList<Button> buttons = new ArrayList<Button>();
 
-                    ArrayList<button> colors = new ArrayList<button>();
+                    ArrayList<Button> colors = new ArrayList<Button>();
 
-                    ArrayList<button> waitbuttons = new ArrayList<button>();
+                    ArrayList<Button> waitbuttons = new ArrayList<Button>();
 
-                    buttons.add(new button(0, 300, 400, "singl", new Color(0, 255, 0)) {
+                    buttons.add(new Button(0, 300, 400, "singl", new Color(0, 255, 0)) {
 
                         @Override
                         public void click() {
@@ -377,7 +184,7 @@ public class V2 {
 
                     });
 
-                    buttons.add(new button(0, 370, 400, "multi", new Color(0, 155, 255)) {
+                    buttons.add(new Button(0, 370, 400, "multi", new Color(0, 155, 255)) {
 
                         @Override
                         public void click() {
@@ -398,9 +205,9 @@ public class V2 {
 
                     });
 
-                    buttons.add(new locale(10, 10));
+                    buttons.add(new Locale(10, 10));
 
-                    buttons.add(new button(0, 440, 150, "chang", Color.decode(conf.get("color").getValueAsString())) {
+                    buttons.add(new Button(0, 440, 150, "chang", Color.decode(conf.get("color").getValueAsString())) {
 
                         @Override
                         public void render() {
@@ -415,7 +222,7 @@ public class V2 {
 
                     });
 
-                    buttons.add(new button(0, 510, 400, "exit", new Color(255, 55, 0)) {
+                    buttons.add(new Button(0, 510, 400, "exit", new Color(255, 55, 0)) {
 
                         @Override
                         public void click() {
@@ -424,7 +231,7 @@ public class V2 {
 
                     });
 
-                    waitbuttons.add(new button(0, 270, 400, "exit", new Color(255, 55, 0)) {
+                    waitbuttons.add(new Button(0, 270, 400, "exit", new Color(255, 55, 0)) {
 
                         @Override
                         public void click() {
@@ -445,7 +252,7 @@ public class V2 {
                     nowPlaying.loop();
                     nowPlaying.setVolume(conf.get("music").getValueAsBoolean() ? 1 : 0);
 
-                    buttons.add(new switcher(165, 440, conf.get("sound").getValueAsBoolean(), "textures/icons/sound") {
+                    buttons.add(new Switcher(165, 440, conf.get("sound").getValueAsBoolean(), "textures/icons/sound") {
 
                         @Override
                         public void click() {
@@ -454,7 +261,7 @@ public class V2 {
 
                     });
 
-                    buttons.add(new switcher(-165, 440, conf.get("music").getValueAsBoolean(), "textures/icons/music") {
+                    buttons.add(new Switcher(-165, 440, conf.get("music").getValueAsBoolean(), "textures/icons/music") {
 
                         @Override
                         public void click() {
@@ -476,7 +283,7 @@ public class V2 {
                             "choco", Color.decode("#904602")
                         };
                         for (int i = 0; i < 16; i += 2) {
-                            colors.add(new button(0, 100 + 30 * i, 400, colorExamples[i].toString(), (Color) colorExamples[i + 1]) {
+                            colors.add(new Button(0, 100 + 30 * i, 400, colorExamples[i].toString(), (Color) colorExamples[i + 1]) {
 
                                 @Override
                                 public void click() {
@@ -527,17 +334,17 @@ public class V2 {
                             gr.setColor(new Color(0, 0, 0, 125));
                             gr.fillRect(0, 0, Display.getWidth(), Display.getHeight());
                             if (waiting) {
-                                for (button b : waitbuttons) {
+                                for (Button b : waitbuttons) {
                                     b.render();
                                 }
                             } else {
                                 if (changeColor) {
-                                    for (button b : colors) {
+                                    for (Button b : colors) {
                                         b.render();
                                     }
                                 } else {
                                     logo.draw(display_width / 2 - logo.getWidth() / 4, 100, logo.getWidth() / 2, logo.getHeight() / 2);
-                                    for (button b : buttons) {
+                                    for (Button b : buttons) {
                                         b.render();
                                     }
                                 }
